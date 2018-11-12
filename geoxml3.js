@@ -23,6 +23,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Updated 11/11/18 by JMC: parse SimpleData records
  */
 
 if (!String.prototype.trim) {
@@ -575,7 +576,18 @@ function processStyleUrl(node) {
         // add extended data to variables
         var extDataNodes = getElementsByTagName(node, 'ExtendedData');
         if (!!extDataNodes && extDataNodes.length > 0) {
-          var dataNodes = getElementsByTagName(extDataNodes[0], 'Data');
+	  // get SimpleData first, so it will be overwritten
+	  // if there are Data nodes with the same name
+          var dataNodes = getElementsByTagName(extDataNodes[0], 'SimpleData');
+          for (var d = 0; d < dataNodes.length; d++) {
+            var dn    = dataNodes[d];
+            var name  = dn.getAttribute('name');
+            if (!name) continue;
+            var val   = nodeValue(dn);
+            placemark.vars.val[name]     = val;
+          }
+
+          dataNodes = getElementsByTagName(extDataNodes[0], 'Data');
           for (var d = 0; d < dataNodes.length; d++) {
             var dn    = dataNodes[d];
             var name  = dn.getAttribute('name');
